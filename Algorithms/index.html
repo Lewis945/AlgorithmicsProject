@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>TypeScript HTML App</title>
+    <link rel="stylesheet" href="./styles/app.css" type="text/css" />
+
+    <script src="./scripts/jquery/jquery-1.11.3.min.js"></script>
+    <script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
+
+    <script src="./scripts/linq/linq.min.js"></script>
+
+    <script src="./scripts/graph/Node.js"></script>
+    <script src="./scripts/graph/Edge.js"></script>
+    <script src="./scripts/graph/Graph.js"></script>
+
+    <script src="./scripts/algorithms/Prim.js"></script>
+    <script src="./scripts/algorithms/Kruscal.js"></script>
+
+    <script src="./scripts/cytoscape-config.js"></script>
+    <script src="./scripts/app.js"></script>
+</head>
+<body>
+    <h1>TypeScript HTML App</h1>
+
+    <div id="content"></div>
+
+    <a href="#" id="node-create-btn">Create node</a>
+    <a href="#" id="node-edit-btn">Edit node</a>
+    <a href="#" id="node-remove-btn">Remove node</a>
+
+    <a href="#" id="edge-create-btn">Create edge</a>
+    <a href="#" id="edge-edit-btn">Edit edge</a>
+    <a href="#" id="edge-remove-btn">Remove edge</a>
+
+    <div id="cy"></div>
+</body>
+</html>
