@@ -8,6 +8,7 @@ $(function () {
 
         boxSelectionEnabled: false,
         autounselectify: true,
+        wheelSensitivity: 0.1,
 
         style: cytoscape.stylesheet()
             .selector('node')
@@ -84,12 +85,21 @@ $(function () {
         layout: {
             name: 'breadthfirst',
             directed: false,
+            fit: false,
             //roots: '#a',
-            padding: 10
+            padding: 10,
+            ready: function () {
+                //$('#cy > div').height($('.cy-container').height() + 30);
+            }
         }
     };
 
     CY = cytoscape(optionsCY);
+
+    CY.zoom({
+        level: 1.0,
+        position: { x: 600, y: 350 }
+    });
 
     //cy.on('tap', 'node', function (e) {
     //    var node = e.cyTarget;
@@ -127,6 +137,10 @@ $(function () {
 
     //// kick off first highlight
     //highlightNextEle();
+
+    $('#cy > div').height($('.cy-container').height() + 30);
+    $('#cy > div').css('padding-left', 16);
+    $('#cy > div').width($('#cy > div').width() - 16);
 
 });
 

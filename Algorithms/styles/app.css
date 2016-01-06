@@ -1,19 +1,65 @@
-﻿/*body {
-    font-family: 'Segoe UI', sans-serif;
-}*/
+﻿body {
+    font: 14px helvetica neue, helvetica, arial, sans-serif;
+    padding-top: 70px;
+    padding-bottom: 30px;
+}
 
 span {
     font-style: italic;
 }
 
-body {
-    font: 14px helvetica neue, helvetica, arial, sans-serif;
+.cy-container {
+    height: 500px;
+    padding: 0 !important;
+}
+
+.cy-container-panel {
+    /*padding-bottom: 176px;*/
 }
 
 #cy {
     height: 100%;
     width: 100%;
     position: absolute;
+    top: 39px;
     left: 0;
-    top: 200px;
 }
+
+.theme-dropdown .dropdown-menu {
+    position: static;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.theme-showcase > p > .btn {
+    margin: 5px 0;
+}
+
+.theme-showcase .navbar .container {
+    width: auto;
+}
+
+h4 {
+    margin-top: 25px;
+}
+
+.row {
+    margin-bottom: 20px;
+}
+
+    .row .row {
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+
+.settings-panel ul {
+    margin-bottom: 20px;
+}
+
+    .settings-panel ul a {
+        background-color: #eee;
+    }
+
+        .settings-panel ul a:hover {
+            background-color: rgba(86,61,124,.2);
+        }

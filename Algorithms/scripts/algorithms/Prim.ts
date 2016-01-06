@@ -3,7 +3,6 @@
     // A utility function to find the vertex with minimum key
     // value, from the set of vertices not yet included in MST
     function minKey(nodesCount: number, key: number[], mstSet: boolean[]): number {
-        // Initialize min value
         var min = Number.MAX_VALUE;
         var minIndex = -1;
 
@@ -63,10 +62,12 @@
         }
 
         var t = [];
+        var edges = [];
         for (var i = 1; i < graph.nodesCount; i++) {
             t.push(parent[i] + " - " + i + "    " + adjacencyMatrix[i][parent[i]]);
+            edges.push({ source: graph.nodes[parent[i]], target: i, weight: adjacencyMatrix[i][parent[i]] });
         }
 
-        return t;
+        return edges;
     }
 }

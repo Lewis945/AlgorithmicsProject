@@ -31,7 +31,7 @@ module Algorithms {
                         var source = this._nodes[i];
                         var sink = this._nodes[j];
 
-                        var edge = this.getEdgeByName(source.name, sink.name);
+                        var edge = this.getEdgeByNames(source.name, sink.name);
                         if (edge != null) {
                             this.adjacencyMatrix[i][j] = edge.value;
                         } else {
@@ -80,7 +80,7 @@ module Algorithms {
         addEdge(sourceName: string, sinkName: string, value?: number) {
             this.adjacencyMatrix = null;
 
-            var edge = this.getEdgeByName(sourceName, sinkName);
+            var edge = this.getEdgeByNames(sourceName, sinkName);
 
             if (edge != null) {
                 throw new Error("Edge (" + sourceName + "->" + sinkName + ") already exists.");
@@ -93,7 +93,15 @@ module Algorithms {
             this._edges.push(edge);
         }
 
-        getEdgeByName(sourceName: string, sinkName: string): Edge {
+        getNodeByName(name: string): Node {
+            var edge = Enumerable.from(this._nodes).firstOrDefault((n: Node, i) => {
+                return n.name == name;
+            }, null);
+
+            return edge;
+        }
+
+        getEdgeByNames(sourceName: string, sinkName: string): Edge {
             var edge = null;
 
             if (this.orientated) {

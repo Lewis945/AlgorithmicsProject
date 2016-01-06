@@ -5,7 +5,6 @@ var Algorithms;
         // A utility function to find the vertex with minimum key
         // value, from the set of vertices not yet included in MST
         function minKey(nodesCount, key, mstSet) {
-            // Initialize min value
             var min = Number.MAX_VALUE;
             var minIndex = -1;
             for (var v = 0; v < nodesCount; v++)
@@ -54,10 +53,12 @@ var Algorithms;
                 }
             }
             var t = [];
+            var edges = [];
             for (var i = 1; i < graph.nodesCount; i++) {
                 t.push(parent[i] + " - " + i + "    " + adjacencyMatrix[i][parent[i]]);
+                edges.push({ source: graph.nodes[parent[i]], target: i, weight: adjacencyMatrix[i][parent[i]] });
             }
-            return t;
+            return edges;
         }
         Prim.findMinimalSpanningTree = findMinimalSpanningTree;
     })(Prim = Algorithms.Prim || (Algorithms.Prim = {}));

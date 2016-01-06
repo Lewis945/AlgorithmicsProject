@@ -39,7 +39,7 @@ var Algorithms;
                     for (var j = 0; j < this._nodes.length; j++) {
                         var source = this._nodes[i];
                         var sink = this._nodes[j];
-                        var edge = this.getEdgeByName(source.name, sink.name);
+                        var edge = this.getEdgeByNames(source.name, sink.name);
                         if (edge != null) {
                             this.adjacencyMatrix[i][j] = edge.value;
                         }
@@ -75,7 +75,7 @@ var Algorithms;
         };
         Graph.prototype.addEdge = function (sourceName, sinkName, value) {
             this.adjacencyMatrix = null;
-            var edge = this.getEdgeByName(sourceName, sinkName);
+            var edge = this.getEdgeByNames(sourceName, sinkName);
             if (edge != null) {
                 throw new Error("Edge (" + sourceName + "->" + sinkName + ") already exists.");
             }
@@ -84,7 +84,13 @@ var Algorithms;
             edge = new Algorithms.Edge(source, sink, value, this.orientated);
             this._edges.push(edge);
         };
-        Graph.prototype.getEdgeByName = function (sourceName, sinkName) {
+        Graph.prototype.getNodeByName = function (name) {
+            var edge = Enumerable.from(this._nodes).firstOrDefault(function (n, i) {
+                return n.name == name;
+            }, null);
+            return edge;
+        };
+        Graph.prototype.getEdgeByNames = function (sourceName, sinkName) {
             var edge = null;
             if (this.orientated) {
                 edge = Enumerable.from(this._edges).firstOrDefault(function (e, i) {

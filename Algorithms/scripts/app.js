@@ -7,23 +7,62 @@ var App = {
                 return App.Graph.current.graph;
             },
         },
-        selectedNodeName: null,
-        selectedSinkNodeName: null,
-        selectedEdgeName: null,
-        createNode: function () {
-            var graph = App.Graph.current.getGraph();
+        algorithms: {
+            prim: function () {
+                var graph = App.Graph.current.getGraph();
+                var result = Algorithms.Prim.findMinimalSpanningTree(graph);
+                console.log('Prim');
+                console.log(result);
+            },
+            kruscal: function () {
+                var graph = App.Graph.current.getGraph();
+                var kr = new Algorithms.Kruskal(graph);
+                kr.findMinimalSpanningTree();
+                console.log('Kruscal');
+                console.log(kr.edges.map(function (v, i, arr) { return v.source.name + " - " + v.sink.name + "    " + v.value; }));
+            }
         },
-        editNode: function () {
+        selectedNodeName: null,
+        selectedEdgeName: null,
+        action: null,
+        createEditNodeName: null,
+        createEditEdgeName: null,
+        createNode: function (name, opts) {
             var graph = App.Graph.current.getGraph();
+            graph.addNode(name);
+            console.log({ x: opts != undefined ? opts.x : 50, y: opts != undefined ? opts.y : 50 });
+            CY.add([
+                { group: "nodes", data: { id: name }, position: { x: opts != undefined ? opts.x : 100, y: opts != undefined ? opts.y : 100 }, renderedPosition: { x: opts != undefined ? opts.x : 100, y: opts != undefined ? opts.y : 100 } }
+            ]);
+        },
+        editNode: function (name) {
+            var graph = App.Graph.current.getGraph();
+            var node = graph.getNodeByName(App.Graph.selectedNodeName);
+            if (node != null) {
+                node.name = name;
+            }
+            var cyNode = CY.getElementById(App.Graph.selectedNodeName);
+            cyNode.data('id', name);
+            App.Graph.selectedNodeName = name;
         },
         removeNode: function () {
             var graph = App.Graph.current.getGraph();
         },
-        createEdge: function () {
+        createEdge: function (node1, node2, value) {
             var graph = App.Graph.current.getGraph();
+            graph.addEdge(node1, node2, value);
+            CY.add([
+                { group: "edges", data: { id: "edge-" + node1 + node2, weight: value, source: node1, target: node2 } }
+            ]);
         },
-        editEdge: function () {
+        editEdge: function (value) {
             var graph = App.Graph.current.getGraph();
+            var cyEdge = CY.getElementById(App.Graph.selectedEdgeName);
+            cyEdge.data('weight', value);
+            var edge = graph.getEdgeByNames(cyEdge.data("source"), cyEdge.data("target"));
+            if (edge != null) {
+                edge.value = value;
+            }
         },
         removeEdge: function () {
             var graph = App.Graph.current.getGraph();
@@ -31,7 +70,7 @@ var App = {
         onNodeClick: function (e) {
             var graph = App.Graph.current.getGraph();
             var id = e.data('id');
-            console.log('clicked ' + e.data('id'));
+            //console.log('clicked ' + e.data('id'));
             if (App.Graph.selectedNodeName != null) {
                 if (App.Graph.selectedNodeName == id) {
                     e.removeClass('selected');
@@ -55,7 +94,7 @@ var App = {
         onEdgeClick: function (e) {
             var graph = App.Graph.current.getGraph();
             var id = e.data('id');
-            console.log('clicked ' + e.data('id'));
+            //console.log('clicked ' + e.data('id'));
             if (App.Graph.selectedEdgeName != null) {
                 if (App.Graph.selectedEdgeName == id) {
                     e.removeClass('selected');
@@ -77,29 +116,96 @@ var App = {
 };
 // Events
 $(document).ready(function () {
-    $("#node-create-btn").on("click", function () {
-        App.Graph.createNode();
-    });
-    $("#node-edit-btn").on("click", function () {
-        App.Graph.editNode();
+    $("#node-create-edit-btn").on("click", function () {
+        if (App.Graph.action == "create-node") {
+            $('#node-create-edit-modal').modal('hide');
+        }
+        else if (App.Graph.action == "edit-node") {
+            App.Graph.editNode($('#node-name-input').val());
+            $('#node-create-edit-modal').modal('hide');
+            App.Graph.action = null;
+        }
     });
     $("#node-remove-btn").on("click", function () {
         App.Graph.removeNode();
     });
-    $("#edge-create-btn").on("click", function () {
-        App.Graph.createEdge();
-    });
-    $("#edge-edit-btn").on("click", function () {
-        App.Graph.editEdge();
+    $("#edge-create-edit-btn").on("click", function () {
+        if (App.Graph.action == "create-edge") {
+            $('#edge-create-edit-modal').modal('hide');
+        }
+        else if (App.Graph.action == "edit-edge") {
+            App.Graph.editEdge($('#edge-value-input').val());
+            $('#edge-create-edit-modal').modal('hide');
+            App.Graph.action = null;
+        }
     });
     $("#edge-remove-btn").on("click", function () {
         App.Graph.removeEdge();
     });
     CY.on('click', 'node', function (evt) {
+        if (App.Graph.action == "create-edge" && App.Graph.selectedNodeName != null) {
+            App.Graph.createEdge(App.Graph.selectedNodeName, this.data('id'), $('#edge-value-input').val());
+            App.Graph.action = null;
+        }
+        //console.log(this);
         App.Graph.onNodeClick(this);
     });
     CY.on('click', 'edge', function (evt) {
         App.Graph.onEdgeClick(this);
+    });
+    $('.settings-panel .nav-pills a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    $('.settings-panel .list-group.actions .list-group-item').click(function (e) {
+        e.preventDefault();
+        App.Graph.action = $(this).data('act');
+        if (App.Graph.action == "create-node") {
+            $('#node-name-input').val("");
+        }
+        else if (App.Graph.action == "create-edge") {
+            $('#edge-value-input').val("");
+        }
+        else if (App.Graph.action == "edit-node") {
+            var graph = App.Graph.current.getGraph();
+            var node = graph.getNodeByName(App.Graph.selectedNodeName);
+            if (node != null) {
+                $('#node-name-input').val(node.name);
+            }
+        }
+        else if (App.Graph.action == "edit-edge") {
+            var graph = App.Graph.current.getGraph();
+            var cyEdge = CY.getElementById(App.Graph.selectedEdgeName);
+            $('#edge-value-input').val(cyEdge.data('weight'));
+        }
+    });
+    CY.on('tap', function (event) {
+        var evtTarget = event.cyTarget;
+        if (evtTarget === CY) {
+            //console.log('tap on background');
+            if (App.Graph.action == "create-node") {
+                console.log(event.cyPosition);
+                console.log(CY.pan());
+                App.Graph.createNode($('#node-name-input').val(), { x: event.cyPosition.x + CY.pan().x, y: event.cyPosition.y + CY.pan().y });
+                App.Graph.action = null;
+            }
+        }
+        else {
+        }
+    });
+    $('#node-name-input').on("change paste keyup", function () {
+        App.Graph.createEditNodeName = $(this).val();
+    });
+    $('#edge-value-input').on("change paste keyup", function () {
+        App.Graph.createEditEdgeName = $(this).val();
+    });
+    $('#algorithms .list-group.algorithms .prim').click(function (e) {
+        e.preventDefault();
+        App.Graph.algorithms.prim();
+    });
+    $('#algorithms .list-group.algorithms .kruscal').click(function (e) {
+        e.preventDefault();
+        App.Graph.algorithms.kruscal();
     });
 });
 $(document).ready(function () {
@@ -107,6 +213,7 @@ $(document).ready(function () {
     var g = new Algorithms.Graph();
     g.orientated = false;
     g.weighted = true;
+    App.Graph.current.graph = g;
     g.addNode("0");
     g.addNode("1");
     g.addNode("2");
@@ -170,14 +277,7 @@ $(document).ready(function () {
     //};
     //setTimeout(highlightNextEle, 5000)
     // --------------------------------------------
-    console.log("Edges");
-    console.log(g.getEdges());
-    var result = Algorithms.Prim.findMinimalSpanningTree(g);
-    console.log('Prim');
-    console.log(result);
-    var kr = new Algorithms.Kruskal(g);
-    kr.findMinimalSpanningTree();
-    console.log('Kruscal');
-    console.log(kr.edges.map(function (v, i, arr) { return v.source.name + " - " + v.sink.name + "    " + v.value; }));
+    //console.log("Edges");
+    //console.log(g.getEdges());
 });
 //# sourceMappingURL=app.js.map
