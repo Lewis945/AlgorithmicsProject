@@ -8,6 +8,15 @@ interface JQuery {
     modal(settings: any): JQuery;
 }
 
+interface HTMLElement {
+    files: any;
+}
+
+interface EventTarget {
+    readyState: any;
+    result: any;
+}
+
 declare var CY: any;
 declare var refreshCY: any;
 
@@ -18,6 +27,7 @@ var App = {
             getGraph: function (): Algorithms.Graph {
                 return App.Graph.current.graph;
             },
+            mst: null
         },
 
         algorithms: {
@@ -26,13 +36,31 @@ var App = {
                 var result = Algorithms.Prim.findMinimalSpanningTree(graph);
                 console.log('Prim');
                 console.log(result);
+                highlightPath(result, 'mst');
+                App.Graph.current.mst = result;
             },
             kruscal: function () {
                 var graph = App.Graph.current.getGraph();
                 var kr = new Algorithms.Kruskal(graph);
                 kr.findMinimalSpanningTree();
                 console.log('Kruscal');
-                console.log(kr.edges.map((v, i, arr) => { return v.source.name + " - " + v.sink.name + "    " + v.value }));
+                console.log(kr.edges);
+                highlightPath(kr.edges, 'mst');
+                App.Graph.current.mst = kr.edges;
+            },
+            tsp: function () {
+                var preorder = App.Graph.current.getGraph().preOrder(App.Graph.current.getGraph().nodes[0], App.Graph.current.mst);
+                console.log('Preorder');
+                console.log(preorder);
+
+                var ps = App.Graph.current.getGraph().getPathAndScore(preorder);
+                console.log('Path');
+                console.log(ps.path);
+                console.log('Score: ' + ps.score);
+
+                alert('Score: ' + ps.score);
+
+                highlightPath(ps.path, 'tsp');
             }
         },
 
@@ -48,7 +76,7 @@ var App = {
             var graph = App.Graph.current.getGraph();
             graph.addNode(name);
 
-            console.log({ x: opts != undefined ? opts.x : 50, y: opts != undefined ? opts.y : 50 });
+            //console.log({ x: opts != undefined ? opts.x : 50, y: opts != undefined ? opts.y : 50 });
             CY.add([
                 { group: "nodes", data: { id: name }, position: { x: opts != undefined ? opts.x : 100, y: opts != undefined ? opts.y : 100 }, renderedPosition: { x: opts != undefined ? opts.x : 100, y: opts != undefined ? opts.y : 100 } }
             ]);
@@ -140,6 +168,44 @@ var App = {
                 App.Graph.selectedEdgeName = id;
             }
         },
+
+        processFile: function (content: string) {
+            var matrix = [];
+
+            var lines = content.split("\n");
+            for (var i = 0; i < lines.length; i++) {
+                matrix[i] = [];
+                var line = lines[i].trim();
+                var numbers = line.split(" ");
+                for (var j = 0; j < numbers.length; j++) {
+                    var number = parseFloat(numbers[j]);
+                    matrix[i][j] = number;
+                }
+            }
+
+            App.Graph.current.graph = new Algorithms.Graph(matrix);
+            App.Graph.current.graph.orientated = false;
+            App.Graph.current.graph.weighted = true;
+
+            var g: Algorithms.Graph = App.Graph.current.graph;
+            var cyData = [];
+
+            for (var i = 0; i < g.nodesCount; i++) {
+                var x = Math.floor((Math.random() * CY.width()) + 1);
+                var y = Math.floor((Math.random() * CY.height()) + 1);
+
+                var node = g.nodes[i];
+                cyData.push({ group: "nodes", data: { id: node.name }, position: { x: x, y: y }, renderedPosition: { x: x, y: y } });
+            }
+
+            for (var i = 0; i < g.edges.length; i++) {
+                var edge = g.edges[i];
+                cyData.push({ group: "edges", data: { id: "edge-" + edge.source.name + edge.sink.name, weight: edge.value, source: edge.source.name, target: edge.sink.name } });
+            }
+
+            CY.add(cyData);
+            CY.forceRender();
+        },
     }
 };
 
@@ -216,8 +282,8 @@ $(document).ready(function () {
             //console.log('tap on background');
             
             if (App.Graph.action == "create-node") {
-                console.log(event.cyPosition);
-                console.log(CY.pan());
+                //console.log(event.cyPosition);
+                //console.log(CY.pan());
                 App.Graph.createNode($('#node-name-input').val(), { x: event.cyPosition.x + CY.pan().x, y: event.cyPosition.y + CY.pan().y });
                 App.Graph.action = null;
             }
@@ -244,6 +310,44 @@ $(document).ready(function () {
         e.preventDefault();
         App.Graph.algorithms.kruscal();
     });
+
+    $('#algorithms .list-group.algorithms .hamiltonian').click(function (e) {
+        e.preventDefault();
+        App.Graph.algorithms.tsp();
+    });
+
+    $(document).on('change', '.btn-file :file', function () {
+        var input = $(this),
+            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
+    });
+
+    $('#file-process').click(function (e) {
+        e.preventDefault();
+
+        var files = document.getElementById('file-graph').files;
+        if (!files.length) {
+            alert('Please select a file!');
+            return;
+        }
+
+        var file = files[0];
+        var start = 0;
+        var stop = file.size - 1;
+
+        var reader = new FileReader();
+
+        // If we use onloadend, we need to check the readyState.
+        reader.onloadend = function (evt) {
+            if (evt.target.readyState == 2) {
+                App.Graph.processFile(evt.target.result);
+            }
+        };
+
+        var blob = file.slice(start, stop + 1);
+        reader.readAsBinaryString(blob);
+    });
 });
 
 $(document).ready(function () {
@@ -252,27 +356,28 @@ $(document).ready(function () {
     var g = new Algorithms.Graph();
     g.orientated = false;
     g.weighted = true;
-
     App.Graph.current.graph = g;
 
-    g.addNode("0");
-    g.addNode("1");
-    g.addNode("2");
-    g.addNode("3");
-    g.addNode("4");
-    g.addNode("5");
+    //g.addNode("a");
+    //g.addNode("b");
+    //g.addNode("c");
+    //g.addNode("d");
+    //g.addNode("e");
+    //g.addNode("f");
 
-    for (var k = 0; k < g.nodesCount; k++) {
-        g.nodes[k].order = k;
-    }
+    //for (var k = 0; k < g.nodesCount; k++) {
+    //    g.nodes[k].order = k;
+    //}
 
-    g.addEdge("0", "1", 2);
-    g.addEdge("0", "3", 1);
-    g.addEdge("1", "2", 3);
-    g.addEdge("2", "3", 5);
-    g.addEdge("2", "4", 7);
-    g.addEdge("3", "4", 6);
-    g.addEdge("4", "5", 4);
+    //g.addEdge("a", "b", 4);
+    //g.addEdge("a", "f", 2);
+    //g.addEdge("b", "f", 5);
+    //g.addEdge("b", "c", 6);
+    //g.addEdge("c", "f", 1);
+    //g.addEdge("c", "d", 3);
+    //g.addEdge("d", "e", 2);
+    //g.addEdge("e", "f", 4);
+
     // --------------------------------------------
 
     // --------------------------------------------
@@ -335,3 +440,46 @@ $(document).ready(function () {
     //console.log("Edges");
     //console.log(g.getEdges());
 });
+
+function highlightPath(edges: { source: string, target: string, weight: number }[], className: string) {
+    var cyPath = [];
+
+    for (var i = 0; i < edges.length; i++) {
+        var edge = edges[i];
+
+        var source = CY.getElementById(edge.source);
+        if (cyPath.indexOf(source) < 0) {
+            cyPath.push(source);
+        }
+
+        var sourceTargetEdge = CY.getElementById("edge-" + edge.target + edge.source);
+        var targetSourceEdge = CY.getElementById("edge-" + edge.source + edge.target);
+
+        if (sourceTargetEdge.length > 0 && targetSourceEdge.length > 0) {
+            if (cyPath.indexOf(sourceTargetEdge) < 0 && cyPath.indexOf(targetSourceEdge) < 0) {
+                cyPath.push(sourceTargetEdge);
+            }
+        } else if (sourceTargetEdge.length > 0) {
+            cyPath.push(sourceTargetEdge);
+        } else if (targetSourceEdge.length > 0) {
+            cyPath.push(targetSourceEdge);
+        }
+
+        var target = CY.getElementById(edge.target);
+        if (cyPath.indexOf(target) < 0) {
+            cyPath.push(target);
+        }
+    }
+    console.log(cyPath);
+    var i = 0;
+    var highlightNextElement = function () {
+        if (i < cyPath.length) {
+            cyPath[i].addClass(className);
+            i++;
+            setTimeout(highlightNextElement, 1000);
+        } else {
+            alert('Done!');
+        }
+    };
+    highlightNextElement();
+};

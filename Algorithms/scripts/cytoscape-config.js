@@ -24,11 +24,19 @@ $(function () {
                 'line-color': '#ddd',
                 'target-arrow-color': '#ddd'
             })
-            .selector('.highlighted')
+            .selector('.mst')
             .css({
                 'background-color': '#61bffc',
                 'line-color': '#61bffc',
                 'target-arrow-color': '#61bffc',
+                'transition-property': 'background-color, line-color, target-arrow-color',
+                'transition-duration': '0.5s'
+            })
+            .selector('.tsp')
+            .css({
+                'background-color': 'green',
+                'line-color': 'green',
+                'target-arrow-color': 'green',
                 'transition-property': 'background-color, line-color, target-arrow-color',
                 'transition-duration': '0.5s'
             })
@@ -61,26 +69,27 @@ $(function () {
         //    ]
         //},
 
-        elements: {
-            nodes: [
-                { data: { id: '0' } },
-                { data: { id: '1' } },
-                { data: { id: '2' } },
-                { data: { id: '3' } },
-                { data: { id: '4' } },
-                { data: { id: '5' } }
-            ],
+        //elements: {
+        //    nodes: [
+        //        { data: { id: 'a' } },
+        //        { data: { id: 'b' } },
+        //        { data: { id: 'c' } },
+        //        { data: { id: 'd' } },
+        //        { data: { id: 'e' } },
+        //        { data: { id: 'f' } }
+        //    ],
 
-            edges: [
-                { data: { id: '01', weight: 2, source: '0', target: '1' } },
-                { data: { id: '03', weight: 1, source: '0', target: '3' } },
-                { data: { id: '12', weight: 3, source: '1', target: '2' } },
-                { data: { id: '23', weight: 5, source: '2', target: '3' } },
-                { data: { id: '24', weight: 7, source: '2', target: '4' } },
-                { data: { id: '34', weight: 6, source: '3', target: '4' } },
-                { data: { id: '45', weight: 4, source: '4', target: '5' } }
-            ]
-        },
+        //    edges: [
+        //        { data: { id: 'edge-ab', weight: 4, source: 'a', target: 'b' } },
+        //        { data: { id: 'edge-af', weight: 2, source: 'a', target: 'f' } },
+        //        { data: { id: 'edge-bf', weight: 5, source: 'b', target: 'f' } },
+        //        { data: { id: 'edge-bc', weight: 6, source: 'b', target: 'c' } },
+        //        { data: { id: 'edge-cf', weight: 1, source: 'c', target: 'f' } },
+        //        { data: { id: 'edge-cd', weight: 3, source: 'c', target: 'd' } },
+        //        { data: { id: 'edge-de', weight: 2, source: 'd', target: 'e' } },
+        //        { data: { id: 'edge-ef', weight: 4, source: 'e', target: 'f' } }
+        //    ]
+        //},
 
         layout: {
             name: 'breadthfirst',
@@ -100,6 +109,7 @@ $(function () {
         level: 1.0,
         position: { x: 600, y: 350 }
     });
+    CY.zoomingEnabled(false);
 
     //cy.on('tap', 'node', function (e) {
     //    var node = e.cyTarget;

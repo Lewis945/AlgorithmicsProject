@@ -31,7 +31,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Bootstrap theme</a>
+                <a class="navbar-brand" href="#">Algorithmics project</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -43,8 +43,12 @@
     </nav>
     <div class="container theme-showcase">
         <div class="jumbotron">
-            <h1>Theme example</h1>
-            <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>
+            <h1>Algorithmics project</h1>
+            <p>
+                Question: How TSP can be solved with a minimum spanning tree?<br/>
+                Project team: Olha Shepelenko, Sergeii Shepelenko, Vitalii Zakharov 
+            </p>
+            <p>GitHub: <a href="https://github.com/Lewis945/AlgorithmicsProject">https://github.com/Lewis945/AlgorithmicsProject</a></p>
         </div>
     </div>
     <div class="container-fluid">
@@ -52,17 +56,9 @@
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Panel title</h3>
+                        <h3 class="panel-title">Settings</h3>
                     </div>
                     <div class="panel-body">
-                        <!--<a href="#" id="node-create-btn">Create node</a>
-                        <a href="#" id="node-edit-btn">Edit node</a>
-                        <a href="#" id="node-remove-btn">Remove node</a>
-
-                        <a href="#" id="edge-create-btn">Create edge</a>
-                        <a href="#" id="edge-edit-btn">Edit edge</a>
-                        <a href="#" id="edge-remove-btn">Remove edge</a>-->
-
                         <div class="settings-panel">
                             <!-- Nav tabs -->
                             <ul class="nav nav-pills" role="tablist">
@@ -77,13 +73,13 @@
                                     <div class="list-group actions">
                                         <a href="#" class="list-group-item active">Node</a>
                                         <a href="#" class="list-group-item" data-act="create-node" data-toggle="modal" data-target="#node-create-edit-modal">Create node</a>
-                                        <a href="#" class="list-group-item" data-act="edit-node" data-toggle="modal" data-target="#node-create-edit-modal">Edit node</a>
-                                        <a href="#" class="list-group-item" id="node-remove-btn" data-toggle="modal">Remove node</a>
+                                        <!--<a href="#" class="list-group-item" data-act="edit-node" data-toggle="modal" data-target="#node-create-edit-modal">Edit node</a>
+                                        <a href="#" class="list-group-item" id="node-remove-btn" data-toggle="modal">Remove node</a>-->
 
                                         <a href="#" class="list-group-item active">Edge</a>
                                         <a href="#" class="list-group-item" data-act="create-edge" data-toggle="modal" data-target="#edge-create-edit-modal">Create edge</a>
                                         <a href="#" class="list-group-item" data-act="edit-edge" data-toggle="modal" data-target="#edge-create-edit-modal">Edit edge</a>
-                                        <a href="#" class="list-group-item" id="edge-remove-btn" data-toggle="modal">Remove edge</a>
+                                        <!--<a href="#" class="list-group-item" id="edge-remove-btn" data-toggle="modal">Remove edge</a>-->
                                     </div>
 
                                     <div class="modal fade" id="node-create-edit-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -133,12 +129,15 @@
                                     </div>
                                 </div>
                                 <div role="tabpanel" class="tab-pane" id="file">
-                                    File
+                                    <span class="btn btn-file btn-lg btn-primary">
+                                        Browse <input type="file" id="file-graph">
+                                    </span>
+                                    <button type="button" id="file-process" class="btn btn-lg btn-primary">Go</button>
                                 </div>
                                 <div role="tabpanel" class="tab-pane" id="algorithms">
                                     <div class="list-group algorithms">
                                         <a href="#" class="list-group-item active">
-                                            <h4 class="list-group-item-heading">Algorithms</h4>
+                                            <h4 class="list-group-item-heading">MST Algorithms</h4>
                                         </a>
                                         <a href="#" class="list-group-item prim">
                                             <h4 class="list-group-item-heading">Prim's algorithm</h4>
@@ -146,6 +145,13 @@
                                         </a>
                                         <a href="#" class="list-group-item kruscal">
                                             <h4 class="list-group-item-heading">Kruscal's algorithm</h4>
+                                            <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+                                        </a>
+                                        <a href="#" class="list-group-item active">
+                                            <h4 class="list-group-item-heading">TSP Algorithms</h4>
+                                        </a>
+                                        <a href="#" class="list-group-item hamiltonian">
+                                            <h4 class="list-group-item-heading">Hamiltonian cycle algorithm</h4>
                                             <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
                                         </a>
                                     </div>
@@ -159,7 +165,7 @@
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Panel title</h3>
+                        <h3 class="panel-title">Graph</h3>
                     </div>
                     <div class="panel-body cy-container-panel">
                         <div class="cy-container">

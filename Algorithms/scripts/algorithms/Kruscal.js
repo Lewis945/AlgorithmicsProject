@@ -2,73 +2,76 @@ var Algorithms;
 (function (Algorithms) {
     var Kruskal = (function () {
         function Kruskal(graph) {
-            this.vertexGroups = [];
             this.edges = [];
             this.total = 0;
             this.graph = graph;
         }
-        Kruskal.prototype.getVertexGroup = function (nodeName) {
-            for (var i = 0; i < this.vertexGroups.length; i++) {
-                if (this.vertexGroups[i].indexOf(nodeName) > -1) {
-                    return this.vertexGroups[i];
-                }
+        // A utility function to find set of an element i
+        // (uses path compression technique)
+        Kruskal.prototype.find = function (subsets, i) {
+            // find root and make root as parent of i (path compression)
+            if (subsets[i].parent != i) {
+                subsets[i].parent = this.find(subsets, subsets[i].parent);
             }
-            return null;
+            return subsets[i].parent;
         };
-        /**
-         * The edge to be inserted has 2 vertices - A and B
-         * We maintain a vector that contains groups of vertices.
-         * We first check if either A or B exists in any group
-         * If neither A nor B exists in any group
-         *     We create a new group containing both the vertices.
-         * If one of the vertices exists in a group and the other does not
-         *     We add the vertex that does not exist to the group of the other vertex
-         * If both vertices exist in different groups
-         *     We merge the two groups into one
-         * All of the above scenarios mean that the edge is a valid Kruskal edge
-         * In that scenario, we will add the edge to the Kruskal edges
-         * However, if both vertices exist in the same group
-         *     We do not consider the edge as a valid Kruskal edge
-         */
-        Kruskal.prototype.insertEdge = function (edge) {
-            var vertexGroupA = this.getVertexGroup(edge.source.name);
-            var vertexGroupB = this.getVertexGroup(edge.sink.name);
-            if (vertexGroupA == null) {
-                this.edges.push(edge);
-                if (vertexGroupB == null) {
-                    var htNewVertexGroup = [];
-                    htNewVertexGroup.push(edge.source.name);
-                    htNewVertexGroup.push(edge.sink.name);
-                    this.vertexGroups.push(htNewVertexGroup);
-                }
-                else {
-                    vertexGroupB.push(edge.source.name);
-                }
+        // A function that does union of two sets of x and y
+        // (uses union by rank)
+        Kruskal.prototype.union = function (subsets, x, y) {
+            var xroot = this.find(subsets, x);
+            var yroot = this.find(subsets, y);
+            // Attach smaller rank tree under root of high rank tree
+            // (Union by Rank)
+            if (subsets[xroot].rank < subsets[yroot].rank) {
+                subsets[xroot].parent = yroot;
+            }
+            else if (subsets[xroot].rank > subsets[yroot].rank) {
+                subsets[yroot].parent = xroot;
             }
             else {
-                if (vertexGroupB == null) {
-                    vertexGroupA.push(edge.sink.name);
-                    this.edges.push(edge);
-                }
-                else if (vertexGroupA != vertexGroupB) {
-                    Array.prototype.push.apply(vertexGroupA, vertexGroupB);
-                    // remove vertexGroupB form vertexGroups
-                    var index = this.vertexGroups.indexOf(vertexGroupB);
-                    if (index > -1) {
-                        this.vertexGroups.splice(index, 1);
-                    }
-                    this.edges.push(edge);
-                }
+                subsets[yroot].parent = xroot;
+                subsets[xroot].rank++;
             }
         };
+        // The main function to construct MST using Kruskal's algorithm
         Kruskal.prototype.findMinimalSpanningTree = function () {
-            var edges = this.graph.getEdges();
-            for (var i = 0; i < edges.length; i++) {
-                this.insertEdge(edges[i]);
+            // Step 1:  Sort all the edges in non-decreasing order of their
+            // weight.  If we are not allowed to change the given graph, we
+            // can create a copy of array of edges
+            var sortedEdges = this.graph.edges.sort(function (a, b) {
+                if (a.value < b.value) {
+                    return -1;
+                }
+                else if (a.value > b.value) {
+                    return 1;
+                }
+                // a должно быть равным b
+                return 0;
+            });
+            // Allocate memory for creating V ssubsets
+            var subsets = [];
+            // Create V subsets with single elements
+            for (var v = 0; v < this.graph.nodesCount; v++) {
+                subsets[v] = {
+                    parent: v,
+                    rank: 0
+                };
             }
-            this.total = 0;
-            for (var i = 0; i < this.edges.length; i++) {
-                this.total += this.edges[i].value;
+            var e = 0; // An index variable, used for result[]
+            var i = 0; // An index variable, used for sorted edges
+            // Number of edges to be taken is equal to V-1
+            while (e < this.graph.nodesCount - 1) {
+                // Step 2: Pick the smallest edge. And increment the index
+                // for next iteration
+                var nextEdge = sortedEdges[i++];
+                var x = this.find(subsets, nextEdge.source.order);
+                var y = this.find(subsets, nextEdge.sink.order);
+                // If including this edge does't cause cycle, include it
+                // in result and increment the index of result for next edge
+                if (x != y) {
+                    this.edges[e++] = { source: nextEdge.source.name, target: nextEdge.sink.name, weight: nextEdge.value };
+                    this.union(subsets, x, y);
+                }
             }
         };
         return Kruskal;
