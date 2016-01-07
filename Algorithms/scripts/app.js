@@ -180,7 +180,7 @@ $(document).ready(function () {
             $('#edge-create-edit-modal').modal('hide');
         }
         else if (App.Graph.action == "edit-edge") {
-            App.Graph.editEdge($('#edge-value-input').val());
+            App.Graph.editEdge(parseFloat($('#edge-value-input').val()));
             $('#edge-create-edit-modal').modal('hide');
             App.Graph.action = null;
         }
@@ -190,7 +190,7 @@ $(document).ready(function () {
     });
     CY.on('click', 'node', function (evt) {
         if (App.Graph.action == "create-edge" && App.Graph.selectedNodeName != null) {
-            App.Graph.createEdge(App.Graph.selectedNodeName, this.data('id'), $('#edge-value-input').val());
+            App.Graph.createEdge(App.Graph.selectedNodeName, this.data('id'), parseFloat($('#edge-value-input').val()));
             App.Graph.action = null;
         }
         //console.log(this);

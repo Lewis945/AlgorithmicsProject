@@ -100,7 +100,7 @@ var App = {
         createEdge: function (node1: string, node2: string, value: number) {
             var graph = App.Graph.current.getGraph();
             graph.addEdge(node1, node2, value);
-
+            
             CY.add([
                 { group: "edges", data: { id: "edge-" + node1 + node2, weight: value, source: node1, target: node2 } }
             ]);
@@ -228,7 +228,7 @@ $(document).ready(function () {
         if (App.Graph.action == "create-edge") {
             $('#edge-create-edit-modal').modal('hide');
         } else if (App.Graph.action == "edit-edge") {
-            App.Graph.editEdge($('#edge-value-input').val());
+            App.Graph.editEdge(parseFloat($('#edge-value-input').val()));
             $('#edge-create-edit-modal').modal('hide');
             App.Graph.action = null;
         }
@@ -239,7 +239,7 @@ $(document).ready(function () {
 
     CY.on('click', 'node', function (evt) {
         if (App.Graph.action == "create-edge" && App.Graph.selectedNodeName != null) {
-            App.Graph.createEdge(App.Graph.selectedNodeName, this.data('id'), $('#edge-value-input').val());
+            App.Graph.createEdge(App.Graph.selectedNodeName, this.data('id'), parseFloat($('#edge-value-input').val()));
             App.Graph.action = null;
         }
 

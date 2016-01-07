@@ -120,6 +120,7 @@ module Algorithms {
             this.adjacencyMatrix = null;
             var node = new Node(name, value, label);
             this._nodes.push(node);
+            this.adjacencyMatrix = this.getAdjacencyMatrix();
         }
 
         // Add an edge from source to sink with capacity
@@ -139,6 +140,7 @@ module Algorithms {
 
             edge = new Edge(source, sink, value, this.orientated);
             this._edges.push(edge);
+            this.adjacencyMatrix = this.getAdjacencyMatrix();
         }
 
         getNodeByName(name: string): Node {
@@ -258,6 +260,7 @@ module Algorithms {
 
                 var edge = this.getEdgeByNames(p1, p2);
                 if (edge != null) {
+                    console.log(edge);
                     score += edge.value;
                 }
             }

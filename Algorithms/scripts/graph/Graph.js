@@ -112,6 +112,7 @@ var Algorithms;
             this.adjacencyMatrix = null;
             var node = new Algorithms.Node(name, value, label);
             this._nodes.push(node);
+            this.adjacencyMatrix = this.getAdjacencyMatrix();
         };
         Graph.prototype.addEdge = function (sourceName, sinkName, value) {
             this.adjacencyMatrix = null;
@@ -123,6 +124,7 @@ var Algorithms;
             var sink = Enumerable.from(this._nodes).firstOrDefault(function (n, i) { return n.name == sinkName; }, null);
             edge = new Algorithms.Edge(source, sink, value, this.orientated);
             this._edges.push(edge);
+            this.adjacencyMatrix = this.getAdjacencyMatrix();
         };
         Graph.prototype.getNodeByName = function (name) {
             var edge = Enumerable.from(this._nodes).firstOrDefault(function (n, i) {
@@ -222,6 +224,7 @@ var Algorithms;
                 path.push({ source: p1, target: p2 });
                 var edge = this.getEdgeByNames(p1, p2);
                 if (edge != null) {
+                    console.log(edge);
                     score += edge.value;
                 }
             }
